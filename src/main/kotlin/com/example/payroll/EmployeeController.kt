@@ -14,15 +14,12 @@ import org.springframework.web.bind.annotation.RestController
 import java.util.stream.Collectors
 
 @RestController
-class EmployeeController(private val repository: EmployeeRepository) {
+class EmployeeController(private val repository: EmployeeRepository,
+                        private val assembler: EmployeeResourceAssembler) {
     @GetMapping("/employees")
     fun all(): CollectionModel<EntityModel<Employee>> {
         val employees: List<EntityModel<Employee>> = repository.findAll().stream()
-            .map { employee: Employee ->
-                EntityModel(employee,
-                    linkTo(methodOn(EmployeeController::class.java).one(employee.id!!)).withSelfRel(),
-                    linkTo(methodOn(EmployeeController::class.java).all()).withRel("employees"))
-            }
+            .map (assembler::toModel)
             .collect(Collectors.toList())
         return CollectionModel(employees,
             linkTo(methodOn(EmployeeController::class.java).all()).withSelfRel())
@@ -36,9 +33,7 @@ class EmployeeController(private val repository: EmployeeRepository) {
     fun one(@PathVariable id: Long): EntityModel<Employee> {
         val employee = repository.findById(id).orElseThrow { EmployeeNotFoundException(id) }
 
-        return EntityModel(employee,
-            linkTo(methodOn(EmployeeController::class.java).one(id)).withSelfRel(),
-            linkTo(methodOn(EmployeeController::class.java).all()).withRel("employees"))
+        return assembler.toModel(employee)
     }
 
     @PutMapping("/employees/{id}")
