@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class PayrollApplication
 
 fun main(args: Array<String>) {
-	runApplication<PayrollApplication>(*args)
+    runApplication<PayrollApplication>(*args)
 }
