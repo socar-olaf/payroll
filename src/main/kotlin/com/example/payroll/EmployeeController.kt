@@ -16,8 +16,8 @@ import java.util.stream.Collectors
 @RestController
 class EmployeeController(private val repository: EmployeeRepository) {
     @GetMapping("/employees")
-    fun all() : CollectionModel<EntityModel<Employee>> {
-        val employees : List<EntityModel<Employee>> = repository.findAll().stream().map { employee ->
+    fun all(): CollectionModel<EntityModel<Employee>> {
+        val employees: List<EntityModel<Employee>> = repository.findAll().stream().map { employee ->
             EntityModel(
                 employee,
                 linkTo(methodOn(EmployeeController::class.java).one(employee.id!!)).withSelfRel(),
@@ -36,7 +36,7 @@ class EmployeeController(private val repository: EmployeeRepository) {
         repository.save(newEmployee)
 
     @GetMapping("/employees/{id}")
-    fun one(@PathVariable id: Long) : EntityModel<Employee> {
+    fun one(@PathVariable id: Long): EntityModel<Employee> {
         val employee = repository.findById(id).orElseThrow { EmployeeNotFoundException(id) }
         return EntityModel(
             employee,
